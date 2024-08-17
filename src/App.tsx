@@ -1,3 +1,4 @@
+// @ts-ignore
 import React, { useState, useEffect, useCallback } from "react";
 import { enc, HmacSHA256, SHA256 } from "crypto-js";
 

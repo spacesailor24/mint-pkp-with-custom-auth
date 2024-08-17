@@ -40,9 +40,20 @@ function App() {
   const verifyTelegramUser = useCallback(
     (user: TelegramUser): { isValid: boolean; isRecent: boolean } => {
       const { hash, ...otherData } = user;
-      const dataCheckString = Object.keys(otherData)
-        .sort()
-        .map((key) => `${key}=${otherData[key as keyof typeof otherData]}`)
+      // const dataCheckString = Object.keys(otherData)
+      //   .sort()
+      //   .map((key) => `${key}=${otherData[key as keyof typeof otherData]}`)
+      //   .join("\n");
+      const orderOfFields = [
+        "auth_date",
+        "first_name",
+        "id",
+        "photo_url",
+        "username",
+      ];
+      const dataCheckString = orderOfFields
+        // @ts-ignore
+        .map((field) => `${field}=${otherData[field]}`)
         .join("\n");
 
       const secretKeyHash = SHA256(VITE_TELEGRAM_BOT_SECRET);

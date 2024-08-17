@@ -1,3 +1,7 @@
+import CryptoJS from "https://jspm.dev/crypto-js";
+
+const { enc, HmacSHA256, SHA256 } = CryptoJS;
+
 (async () => {
   const LIT_PKP_PERMISSIONS_CONTRACT_ADDRESS =
     "0x60C1ddC8b9e38F730F0e7B70A2F84C1A98A69167";
@@ -90,9 +94,17 @@ async function validateTelegramUserData(userData) {
 
     // const isValid = calculatedHash === telegramUserData.hash;
 
-    const currentTimeInSeconds = Math.floor(Date.now() / 1000);
-    const timeSinceAuth = currentTimeInSeconds - telegramUserData.auth_date;
-    const isRecent = timeSinceAuth < 600; // 600 seconds = 10 minutes
+    // const currentTimeInSeconds = Math.floor(Date.now() / 1000);
+    // const timeSinceAuth = currentTimeInSeconds - telegramUserData.auth_date;
+    // const isRecent = timeSinceAuth < 600; // 600 seconds = 10 minutes
+
+    const secretKeyHash = SHA256(telegramBotSecret);
+    const calculatedHash = HmacSHA256(dataCheckString, secretKeyHash).toString(
+      enc.Hex
+    );
+
+    const isValid = calculatedHash === user.hash;
+    const isRecent = Date.now() / 1000 - user.auth_date < 3600;
 
     return { isValid: true, isRecent: true };
   } catch (error) {

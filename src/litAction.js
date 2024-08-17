@@ -78,35 +78,15 @@ async function validateTelegramUserData(userData) {
       .map((field) => `${field}=${userData[field]}`)
       .join("\n");
 
-    // const secretKeyHash = await Lit.Actions.crypto.sha256(
-    //   new TextEncoder().encode(telegramBotSecret)
-    // );
-
-    // const hmac = await Lit.Actions.crypto.hmac(
-    //   new TextEncoder().encode(dataCheckString),
-    //   secretKeyHash,
-    //   "SHA-256"
-    // );
-
-    // const calculatedHash = Array.from(new Uint8Array(hmac))
-    //   .map((b) => b.toString(16).padStart(2, "0"))
-    //   .join("");
-
-    // const isValid = calculatedHash === telegramUserData.hash;
-
-    // const currentTimeInSeconds = Math.floor(Date.now() / 1000);
-    // const timeSinceAuth = currentTimeInSeconds - telegramUserData.auth_date;
-    // const isRecent = timeSinceAuth < 600; // 600 seconds = 10 minutes
-
     const secretKeyHash = SHA256(telegramBotSecret);
     const calculatedHash = HmacSHA256(dataCheckString, secretKeyHash).toString(
       enc.Hex
     );
 
-    const isValid = calculatedHash === user.hash;
-    const isRecent = Date.now() / 1000 - user.auth_date < 3600;
+    const isValid = calculatedHash === userData.hash;
+    const isRecent = Date.now() / 1000 - userData.auth_date < 600;
 
-    return { isValid: true, isRecent: true };
+    return { isValid, isRecent };
   } catch (error) {
     return Lit.Actions.setResponse({
       response: "false",

@@ -1,19 +1,30 @@
-// @ts-ignore
 import React, { useEffect, useRef, useCallback } from "react";
 
-const TelegramLoginButton = ({
-  // @ts-ignore
+import { type TelegramUser } from "./types";
+
+interface TelegramLoginButtonProps {
+  botName: string;
+  dataOnauth: (user: TelegramUser) => void;
+  buttonSize?: "large" | "medium" | "small";
+  requestAccess?: "write" | "read";
+}
+
+declare global {
+  interface Window {
+    TelegramLoginCallback?: (user: TelegramUser) => void;
+  }
+}
+
+const TelegramLoginButton: React.FC<TelegramLoginButtonProps> = ({
   botName,
-  // @ts-ignore
   dataOnauth,
   buttonSize = "large",
   requestAccess = "write",
 }) => {
-  const containerRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const handleAuth = useCallback(
-    // @ts-ignore
-    (user) => {
+    (user: TelegramUser) => {
       console.log("Telegram user:", user);
       dataOnauth(user);
     },
@@ -21,7 +32,6 @@ const TelegramLoginButton = ({
   );
 
   useEffect(() => {
-    // @ts-ignore
     window.TelegramLoginCallback = handleAuth;
 
     const script = document.createElement("script");
@@ -32,15 +42,10 @@ const TelegramLoginButton = ({
     script.setAttribute("data-request-access", requestAccess);
     script.setAttribute("data-onauth", "TelegramLoginCallback(user)");
 
-    // @ts-ignore
-    containerRef.current.appendChild(script);
+    containerRef.current?.appendChild(script);
 
     return () => {
-      if (containerRef.current) {
-        // @ts-ignore
-        containerRef.current.removeChild(script);
-      }
-      // @ts-ignore
+      containerRef.current?.removeChild(script);
       delete window.TelegramLoginCallback;
     };
   }, [botName, handleAuth, buttonSize, requestAccess]);

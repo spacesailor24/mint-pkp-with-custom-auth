@@ -63,7 +63,7 @@ function App() {
       const isRecent = Date.now() / 1000 - user.auth_date < 3600;
 
       console.log(
-        `ℹ️ User Telegram data is valid: ${isValid}. User data is recent: %{isRecent}`
+        `ℹ️ User Telegram data is valid: ${isValid}. User data is recent: ${isRecent}`
       );
 
       return { isValid, isRecent };
